@@ -1,6 +1,3 @@
 # sesync_workshop
 
-
-Collaborators:
-
--Sam Aucoin
+#team members Abby, Sam, Masha, Kitrea
