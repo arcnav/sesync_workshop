@@ -1,0 +1,53 @@
+---
+title: "read_cdr_monthly"
+authors: "Kitrea Sam"
+date: "7/20/2021"
+output: html_document
+###July 20 2021
+### SESYNC Sea Ice Stories
+### Objective: Read in CDR Monthly data
+### Output: Sea Ice Min Extent Time Series; Sea Ice Area Time Series
+---
+
+```{r setup, include=FALSE}
+#Install Packages on First Run
+install('ncdf4')
+
+#Load Libraries
+library(ncdf4) # package for netcdf manipulation
+library(raster) # package for raster manipulation
+library(rgdal) # package for geospatial analysis
+library(ggplot2) # package for plotting
+
+#
+
+filename <- ''
+
+nc_data <- nc_open("filename")
+
+lon <- ncvar_get(nc_data, "longitude")
+lat <- ncvar_get(nc_data, "latitude", verbose = F)
+t <- ncvar_get(nc_data, "time")
+sic <- ncvar_get(nc_data, 'cdr_seaice_conc')
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
