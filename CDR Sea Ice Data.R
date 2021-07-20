@@ -3,9 +3,9 @@ library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
 
-filename <- ''
+filename <- "D:/Sam's Stuff/School/ESS/Sea Ice/Data/seaice_conc_monthly_nh_197811_202012_v04r00.nc" #Sam
 
-nc_data <- nc_open("filename")
+nc_data <- nc_open(filename)
 
 lon <- ncvar_get(nc_data, "longitude")
 lat <- ncvar_get(nc_data, "latitude", verbose = F)
