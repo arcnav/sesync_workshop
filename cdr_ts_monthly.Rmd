@@ -22,6 +22,8 @@ library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
 
+#Settings
+options(max.print=999999)
 #Note - data file is in uploaded in this project.
 #If you cannot access the data file within the project,
 #set your filepath accordingly. 
@@ -36,6 +38,7 @@ filepath <- '/Volumes/KTG_SSD/SESYNC/data/aggregate'
 
 filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
 
+#Load In Data
 nc_data <- nc_open(filename)
 
 lon <- ncvar_get(nc_data, "longitude")
@@ -55,7 +58,7 @@ sie <- replace(sie, sie<.15, 0)
 
 #Aggregate cells across entire Arctic
 icearea <- apply(sia, 3, sum, na.rm = TRUE)  #summing ice area across all pixels per month
-total_sie <- apply(sie, 3, sum, na.rm = TRUE) #not sure if this works yet
+total_sie <-  apply(sie, 3, sum, na.rm = TRUE) #not sure if this works yet
 
 
 icearea <- icearea[c(-1, -2)]            #Deleting nov and dec of 1978
