@@ -23,12 +23,27 @@ library(ggplot2) # package for plotting
 
 filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
 
-nc_data <- nc_open("filename")
+nc_data <- nc_open(filename)
 
 lon <- ncvar_get(nc_data, "longitude")
-lat <- ncvar_get(nc_data, "latitude", verbose = F)
-t <- ncvar_get(nc_data, "time")
-sic <- ncvar_get(nc_data, 'cdr_seaice_conc')
+lat <- ncvar_get(nc_data, "latitude")
+time <- ncvar_get(nc_data, "time")
+sic <- ncvar_get(nc_data, 'cdr_seaice_conc_monthly')
+
+sic[sic > 1] <- NaN         #replacing flag values with NaNs
+
+cellareas <- sic*(25^2)     #finding area of ice in each cell in km^2
+
+icearea <- apply(cellareas, 3, sum, na.rm = TRUE)    #summing ice area per month
+
+icearea <- icearea[c(-1, -2)]     #Deleting the first two entries (nov and dec of 1978)
+time <- time[c(-1, -2)]     #Deleting the first two entries (nov and dec of 1978)
+
+yearly <- matrix(icearea, nrow = 42, byrow = TRUE)
+
+icearea_min <- apply(yearly, 1, min)    #summing ice area per year
+
+plot(icearea_min)
 
 ```
 
