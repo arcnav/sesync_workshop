@@ -30,20 +30,27 @@ lat <- ncvar_get(nc_data, "latitude")
 time <- ncvar_get(nc_data, "time")
 sic <- ncvar_get(nc_data, 'cdr_seaice_conc_monthly')
 
-sic[sic > 1] <- NaN         #replacing flag values with NaNs
+sic[sic > 1] <- NaN                      #replacing flag values with NaNs
 
-cellareas <- sic*(25^2)     #finding area of ice in each cell in km^2
+cellareas <- sic*(25^2)                  #finding ice area in each cell in km^2
 
 icearea <- apply(cellareas, 3, sum, na.rm = TRUE)    #summing ice area per month
 
-icearea <- icearea[c(-1, -2)]     #Deleting the first two entries (nov and dec of 1978)
-time <- time[c(-1, -2)]     #Deleting the first two entries (nov and dec of 1978)
+icearea <- icearea[c(-1, -2)]            #Deleting nov and dec of 1978
+time <- time[c(-1, -2)]                  #Deleting nov and dec of 1978
 
 yearly <- matrix(icearea, nrow = 42, byrow = TRUE)
 
-icearea_min <- apply(yearly, 1, min)    #summing ice area per year
+#icearea_min <- apply(yearly, 1, min)    #taking the minimum month
 
-plot(icearea_min)
+icearea_min <- yearly[ , 9]              #taking september
+
+icearea_min <- icearea_min/1e+06         #making units million km^2
+
+plot(1979:2020, icearea_min, type = 'b',
+     main = 'September Sea Ice Area',
+     xlab = 'Year',
+     ylab = 'Ice Area (million km^2)')
 
 ```
 
