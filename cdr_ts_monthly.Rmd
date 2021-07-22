@@ -33,7 +33,7 @@ getwd()
 
 Sys.getenv('LOGNAME') == 'pacifica'
 
-if (Sys.getenv('LOGNAME') == 'sam') {
+if (Sys.getenv('LOGNAME') == 'samuel') {
   print('Hi Sam')}
 
 filepath <- '/Volumes/KTG_SSD/SESYNC/data/aggregate'
@@ -64,6 +64,9 @@ sie <- sie*(25^2)
 icearea <- apply(sia, 3, sum, na.rm = TRUE)  #summing ice area across all pixels per month
 total_sie <-  apply(sie, 3, sum, na.rm = TRUE) #not sure if this works yet
 
+icearea[icearea == 0] <- NaN               #replacing months with missing data with NaNs
+total_sie[total_sie == 0] <- NaN   
+
 
 icearea <- icearea[c(-1, -2)]            #Deleting nov and dec of 1978
 time <- time[c(-1, -2)]                  #Deleting nov and dec of 1978
@@ -72,6 +75,14 @@ total_sie <- total_sie[c(-1, -2)]        #Deleting nov and dec of 1978
 yearly <- matrix(icearea, nrow = 42, byrow = TRUE) #each col is a month; rows are years
 
 yearly_sie <- matrix(total_sie, nrow = 42, byrow = TRUE)
+
+
+#Making the september sie anomaly
+
+mean_sie <- mean(yearly_sie[3:32,9])     #Mean of September sie on the 1981-2010 period
+
+anomaly_sie <- (yearly_sie[ , 9] - mean_sie)/1e+06
+
 ```
 
 ## R Markdown
@@ -126,6 +137,32 @@ plot(1979:2020, iceextent_sep, type = 'b',
      )
 
 #abline(linregmod, col = "red", lty = 2)  #add linear trendline
+
+```
+### Plot Three
+Region: Complete Arctic
+Measure: September Sea Ice Extent Anomaly
+```{r, include=FALSE}
+
+### Plot September Total Sea Ice Area###
+
+plot(1979:2020, anomaly_sie, type = 'b',
+     main = 'September Arctic Sea Ice Extent Anomaly',
+     xlab = 'Year',
+     ylab = 'Ice Area (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )+
+abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])
+
+t <- 1979:2020
+sie_trend <- lm(formula = anomaly_sie ~ t)
+
+#abline(linregmod, col = "red", lty = 2) #add linear trendline
 
 ```
 
