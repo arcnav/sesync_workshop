@@ -1,0 +1,227 @@
+---
+title: "read_cdr_monthly"
+authors: "Kitrea Sam"
+date: "7/20/2021"
+output: html_document
+###July 20 2021
+### SESYNC Sea Ice Stories
+### Objective: Read in CDR Monthly data
+### Output: Sea Ice Min Extent Time Series; Sea Ice Area Time Series
+<<<<<<< HEAD
+
+#Last Push: 12:00 AZ - Sam 
+
+---
+
+```{r setup, include=FALSE}
+#Install Necessary Packages on First Run (comment out after first run)
+#install.packages('ncdf4')
+
+#Load Libraries
+library(ncdf4) # package for netcdf manipulation
+library(raster) # package for raster manipulation
+library(rgdal) # package for geospatial analysis
+library(ggplot2) # package for plotting
+
+
+#Settings
+options(max.print=999999)
+#Note - data file is in uploaded in this project.
+#If you cannot access the data file within the project,
+#set your filepath accordingly. 
+getwd()
+
+Sys.getenv('LOGNAME') == 'pacifica'
+
+if (Sys.getenv('LOGNAME') == 'samuel') {
+  print('Hi Sam')}
+
+filepath <- '/Volumes/KTG_SSD/SESYNC/data/aggregate'
+
+filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
+
+#Load In Data
+filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
+nc_data <- nc_open(filename)
+
+lon <- ncvar_get(nc_data, "longitude")
+lat <- ncvar_get(nc_data, "latitude")
+time <- ncvar_get(nc_data, "time")
+sic <- ncvar_get(nc_data, 'cdr_seaice_conc_monthly')
+
+
+sic[sic > 1] <- NaN                      #replacing flag values with NaNs
+
+#Define Sea Ice Area
+sia <- sic*(25^2)                        #sea ice area in each cell in km^2
+
+#Define Sea Ice Extent
+sie <- replace(sic, sic>=.15, 1)         #cells with sic >= 15 are considered ice-covered
+sie <- replace(sie, sie<.15, 0)          #cells with sic < 15 considered ice-free
+sie <- sie*(25^2)
+
+#Aggregate cells across entire Arctic
+icearea <- apply(sia, 3, sum, na.rm = TRUE)  #summing ice area across all pixels per month
+total_sie <-  apply(sie, 3, sum, na.rm = TRUE) #not sure if this works yet
+
+icearea[icearea == 0] <- NaN               #replacing months with missing data with NaNs
+total_sie[total_sie == 0] <- NaN   
+
+
+icearea <- icearea[c(-1, -2)]            #Deleting nov and dec of 1978
+time <- time[c(-1, -2)]                  #Deleting nov and dec of 1978
+total_sie <- total_sie[c(-1, -2)]        #Deleting nov and dec of 1978
+
+yearly <- matrix(icearea, nrow = 42, byrow = TRUE) #each col is a month; rows are years
+
+yearly_sie <- matrix(total_sie, nrow = 42, byrow = TRUE)
+
+
+#Making the september sie anomaly
+
+mean_sie <- mean(yearly_sie[3:32,9])     #Mean of September sie on the 1981-2010 period
+
+anomaly_sie <- (yearly_sie[ , 9] - mean_sie)/1e+06
+
+#or by percent
+percent_anomaly <- (anomaly_sie/(mean_sie/1e+06))*100
+
+t <- 1979:2020
+sie_trend <- lm(formula = anomaly_sie ~ t)
+
+#normalizing the data with the trendline
+anomaly_norm <- anomaly_sie - sie_trend[["fitted.values"]]
+
+#finding the standard deviation of the data
+anomaly_sd <- sd(anomaly_norm)
+
+```
+
+## R Markdown
+Now that we have processed the data lets plot it in several different ways
+
+### Plot One
+Region: Complete Arctic
+Measure: Sea Ice Area in September of Each Year (from monthly average)
+```{r, include=FALSE}
+
+### Plot September Total Sea Ice Area###
+icearea_sep <- yearly[ , 9]              #taking september
+
+icearea_sep <- icearea_sep/1e+06         #making units million km^2
+
+plot(1979:2020, icearea_sep, type = 'b',
+     main = 'September Arctic Sea Ice Area',
+     xlab = 'Year',
+     ylab = 'Ice Area (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )
+
+#abline(linregmod, col = "red", lty = 2) #add linear trendline
+
+```
+
+
+### Plot Two
+September Sea Ice Extent
+```{r, include=FALSE}
+
+### Plot ###
+iceextent_sep <- yearly_sie[ , 9]         #taking september
+
+iceextent_sep <- iceextent_sep/1e+06      #making units million km^2
+
+plot(1979:2020, iceextent_sep, type = 'b',
+     main = 'September Arctic Sea Ice Extent',
+     xlab = 'Year',
+     ylab = 'Ice Extent (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )
+
+#abline(linregmod, col = "red", lty = 2)  #add linear trendline
+
+```
+### Plot Three & Four
+Region: Complete Arctic
+Measure: September Sea Ice Extent Anomaly
+```{r, include=FALSE}
+
+### Plot September Total Sea Ice Area###
+
+t <- 1979:2020
+sie_trend <- lm(formula = anomaly_sie ~ t)
+
+plot(1979:2020, anomaly_sie, type = 'b',
+     main = 'September Arctic Sea Ice Extent Anomaly',
+     xlab = 'Year',
+     ylab = 'Ice Extent (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )+
+abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])+
+  #adds 1 sigma lines
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])
+
+#adds 2 sigma lines
+#abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  #abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
+
+```
+
+```{r, include=FALSE}
+
+
+percent_trend <- lm(formula = percent_anomaly ~ t)
+
+plot(1979:2020, percent_anomaly, type = 'b',
+     main = 'September Arctic Sea Ice Extent Anomaly',
+     xlab = 'Year',
+     ylab = 'Ice Extent Anomaly (%)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )+
+abline(percent_trend[["coefficients"]][["(Intercept)"]],percent_trend[["coefficients"]][["t"]])
+
+#abline(linregmod, col = "red", lty = 2) #add linear trendline
+
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
