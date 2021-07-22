@@ -7,6 +7,7 @@ output: html_document
 ### SESYNC Sea Ice Stories
 ### Objective: Read in CDR Monthly data
 ### Output: Sea Ice Min Extent Time Series; Sea Ice Area Time Series
+<<<<<<< HEAD
 
 #Last Push: 12:00 AZ - Sam 
 
@@ -21,6 +22,7 @@ library(ncdf4) # package for netcdf manipulation
 library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
+
 
 #Settings
 options(max.print=999999)
@@ -39,6 +41,7 @@ filepath <- '/Volumes/KTG_SSD/SESYNC/data/aggregate'
 filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
 
 #Load In Data
+filename <- 'seaice_conc_monthly_nh_197811_202012_v04r00.nc'
 nc_data <- nc_open(filename)
 
 lon <- ncvar_get(nc_data, "longitude")
@@ -46,15 +49,16 @@ lat <- ncvar_get(nc_data, "latitude")
 time <- ncvar_get(nc_data, "time")
 sic <- ncvar_get(nc_data, 'cdr_seaice_conc_monthly')
 
+
 sic[sic > 1] <- NaN                    #replacing flag values with NaNs
 
 #Define Sea Ice Area
 sia <- sic*(25^2)           #sea ice area in each cell in km^2
 
 #Define Sea Ice Extent
-#cells with sic < 15 mean no ice extent. cells with sic >= 15 are
-sie <- replace(sic, sic>=.15, 1)
-sie <- replace(sie, sie<.15, 0)
+sie <- replace(sic, sic>=.15, 1)#cells with sic >= 15 are considered ice-covered
+sie <- replace(sie, sie<.15, 0) #cells with sic < 15 considered ice-free
+sie <- sie*(25^2)
 
 #Aggregate cells across entire Arctic
 icearea <- apply(sia, 3, sum, na.rm = TRUE)  #summing ice area across all pixels per month
@@ -77,7 +81,6 @@ Now that we have processed the data lets plot it in several different ways
 Region: Complete Arctic
 Measure: Sea Ice Area in September of Each Year (from monthly average)
 ```{r, include=FALSE}
-#icearea_min <- apply(yearly, 1, min)    #taking the minimum month
 
 ### Plot September Total Sea Ice Area###
 icearea_sep <- yearly[ , 9]              #taking september
@@ -104,20 +107,27 @@ plot(1979:2020, icearea_sep, type = 'b',
 ### Plot Two
 September Sea Ice Extent
 ```{r, include=FALSE}
-#icearea_min <- apply(yearly, 1, min)    #taking the minimum month
 
 ### Plot ###
-icearea_sep <- yearly[ , 9]              #taking september
+iceextent_sep <- yearly_sie[ , 9]              #taking september
 
-icearea_sep <- icearea_sep/1e+06         #making units million km^2
+iceextent_sep <- iceextent_sep/1e+06         #making units million km^2
 
-plot(1979:2020, icearea_sep, type = 'b',
-     main = 'September Total Arctic Sea Ice Area',
+plot(1979:2020, iceextent_sep, type = 'b',
+     main = 'September Arctic Sea Ice Extent',
      xlab = 'Year',
-     ylab = 'Ice Area (million km^2)')
+     ylab = 'Ice Extent (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )
+
+#abline(linregmod, col = "red", lty = 2) #add linear trendline
 
 ```
-
 
 
 ## R Markdown
