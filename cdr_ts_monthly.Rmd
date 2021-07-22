@@ -83,6 +83,18 @@ mean_sie <- mean(yearly_sie[3:32,9])     #Mean of September sie on the 1981-2010
 
 anomaly_sie <- (yearly_sie[ , 9] - mean_sie)/1e+06
 
+#or by percent
+percent_anomaly <- (anomaly_sie/(mean_sie/1e+06))*100
+
+t <- 1979:2020
+sie_trend <- lm(formula = anomaly_sie ~ t)
+
+#normalizing the data with the trendline
+anomaly_norm <- anomaly_sie - sie_trend[["fitted.values"]]
+
+#finding the standard deviation of the data
+anomaly_sd <- sd(anomaly_norm)
+
 ```
 
 ## R Markdown
@@ -139,17 +151,20 @@ plot(1979:2020, iceextent_sep, type = 'b',
 #abline(linregmod, col = "red", lty = 2)  #add linear trendline
 
 ```
-### Plot Three
+### Plot Three & Four
 Region: Complete Arctic
 Measure: September Sea Ice Extent Anomaly
 ```{r, include=FALSE}
 
 ### Plot September Total Sea Ice Area###
 
+t <- 1979:2020
+sie_trend <- lm(formula = anomaly_sie ~ t)
+
 plot(1979:2020, anomaly_sie, type = 'b',
      main = 'September Arctic Sea Ice Extent Anomaly',
      xlab = 'Year',
-     ylab = 'Ice Area (million km^2)',
+     ylab = 'Ice Extent (million km^2)',
      col = "darkblue",
      cex.lab = 1.2,
      cex.axis = 1, 
@@ -157,10 +172,34 @@ plot(1979:2020, anomaly_sie, type = 'b',
      cex = 0.7,
      pch = 16,
      )+
-abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])
+abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])+
+  #adds 1 sigma lines
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])
 
-t <- 1979:2020
-sie_trend <- lm(formula = anomaly_sie ~ t)
+#adds 2 sigma lines
+#abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  #abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
+
+```
+
+```{r, include=FALSE}
+
+
+percent_trend <- lm(formula = percent_anomaly ~ t)
+
+plot(1979:2020, percent_anomaly, type = 'b',
+     main = 'September Arctic Sea Ice Extent Anomaly',
+     xlab = 'Year',
+     ylab = 'Ice Extent Anomaly (%)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )+
+abline(percent_trend[["coefficients"]][["(Intercept)"]],percent_trend[["coefficients"]][["t"]])
 
 #abline(linregmod, col = "red", lty = 2) #add linear trendline
 
