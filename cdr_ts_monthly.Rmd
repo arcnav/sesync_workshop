@@ -22,6 +22,7 @@ library(ncdf4) # package for netcdf manipulation
 library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
+library(caTools)
 
 
 #Settings
@@ -94,6 +95,8 @@ anomaly_norm <- anomaly_sie - sie_trend[["fitted.values"]]
 
 #finding the standard deviation of the data
 anomaly_sd <- sd(anomaly_norm)
+
+
 
 ```
 
@@ -204,7 +207,28 @@ abline(percent_trend[["coefficients"]][["(Intercept)"]],percent_trend[["coeffici
 #abline(linregmod, col = "red", lty = 2) #add linear trendline
 
 ```
+### Plot Five
+Region: Complete Arctic
+Measure: Monthly Sea Ice Extent with Moving Mean
+```{r, include=FALSE}
+#Finding the moving mean
 
+mov_sie <- runmean(total_sie,12)
+
+
+plot(1:504, total_sie/1e+06, type = 'l',
+     main = 'Arctic Sea Ice Extent',
+     xlab = 'Year',
+     ylab = 'Ice Area (million km^2)',
+     col = "darkblue",
+     cex.lab = 1.2,
+     cex.axis = 1, 
+     font.lab = 1,
+     cex = 0.7,
+     pch = 16,
+     )+lines(1:504,mov_sie/1e+06,type = 'l')
+
+```
 
 ## R Markdown
 
