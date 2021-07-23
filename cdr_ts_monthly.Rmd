@@ -166,12 +166,23 @@ plot(1979:2020, anomaly_sie, type = 'b',
      )+
 abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])+
   #adds 1 sigma lines
+<<<<<<< HEAD
   abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]])+
   abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])+
 
 #adds 2 sigma lines
   abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
   abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
+=======
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6)+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6)+
+
+#adds 2 sigma lines
+abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3)+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3)
+
+#legend(1, NULL, legend = c('','1 sd','2 ds'))
+>>>>>>> 211ae161dce5664a03b35f2e143ba63898adcf77
 
 ```
 
