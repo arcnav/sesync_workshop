@@ -1,15 +1,12 @@
 ---
 title: "read_cdr_monthly"
-authors: "Kitrea Sam"
+authors: "Sam Kitrea"
 date: "7/20/2021"
 output: html_document
 ###July 20 2021
 ### SESYNC Sea Ice Stories
 ### Objective: Read in CDR Monthly data
 ### Output: Sea Ice Min Extent Time Series; Sea Ice Area Time Series
-<<<<<<< HEAD
-
-#Last Push: 12:00 AZ - Sam 
 
 ---
 
@@ -26,16 +23,11 @@ library(caTools)
 
 
 #Settings
-options(max.print=999999)
+options(max.print=9999)
 #Note - data file is in uploaded in this project.
 #If you cannot access the data file within the project,
 #set your filepath accordingly. 
 getwd()
-
-Sys.getenv('LOGNAME') == 'pacifica'
-
-if (Sys.getenv('LOGNAME') == 'samuel') {
-  print('Hi Sam')}
 
 filepath <- '/Volumes/KTG_SSD/SESYNC/data/aggregate'
 
@@ -96,8 +88,6 @@ anomaly_norm <- anomaly_sie - sie_trend[["fitted.values"]]
 #finding the standard deviation of the data
 anomaly_sd <- sd(anomaly_norm)
 
-
-
 ```
 
 ## R Markdown
@@ -106,7 +96,7 @@ Now that we have processed the data lets plot it in several different ways
 ### Plot One
 Region: Complete Arctic
 Measure: Sea Ice Area in September of Each Year (from monthly average)
-```{r, include=FALSE}
+```{r, }
 
 ### Plot September Total Sea Ice Area###
 icearea_sep <- yearly[ , 9]              #taking september
@@ -126,13 +116,12 @@ plot(1979:2020, icearea_sep, type = 'b',
      )
 
 #abline(linregmod, col = "red", lty = 2) #add linear trendline
-
 ```
 
 
 ### Plot Two
 September Sea Ice Extent
-```{r, include=FALSE}
+```{r, }
 
 ### Plot ###
 iceextent_sep <- yearly_sie[ , 9]         #taking september
@@ -157,9 +146,9 @@ plot(1979:2020, iceextent_sep, type = 'b',
 ### Plot Three & Four
 Region: Complete Arctic
 Measure: September Sea Ice Extent Anomaly
-```{r, include=FALSE}
+```{r, }
 
-### Plot September Total Sea Ice Area###
+### Plot September Total Sea Ice Extent Anomaly###
 
 t <- 1979:2020
 sie_trend <- lm(formula = anomaly_sie ~ t)
@@ -178,11 +167,11 @@ plot(1979:2020, anomaly_sie, type = 'b',
 abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])+
   #adds 1 sigma lines
   abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]])+
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])+
 
 #adds 2 sigma lines
-#abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
-  #abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
 
 ```
 
