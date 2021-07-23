@@ -36,6 +36,9 @@ a1 <- readLines("~/sesync_workshop/Newspapers/10,000 walrus come ashore in north
 a_list <- list.files("~/sesync_workshop/Newspapers/", full.names = TRUE)
 loop <- lapply(a_list, readLines, skipNul = TRUE)
 
+new_corpus <- as.VCorpus(loop)
+
+article <- new_corpus[[1]]
 
 #newspapers <- VCorpus(DirSource("~/sesync_workshop/Newspapers", encoding = "utf-16"))
 #article <- newspapers[[2]]
