@@ -9,6 +9,10 @@ output: html_document
 ### Output: Sea Ice Min Extent Time Series; Sea Ice Area Time Series
 
 ---
+### Sea Ice Stories: SESYNC Workshop 2021
+#### Identifying Sea Ice Anomalies
+Samuel Aucoin, Kitrea Takata-Glushkoff
+
 
 ```{r setup, include=FALSE}
 #Install Necessary Packages on First Run (comment out after first run)
@@ -90,13 +94,12 @@ anomaly_sd <- sd(anomaly_norm)
 
 ```
 
-## R Markdown
-Now that we have processed the data lets plot it in several different ways
-
-### Plot One
+### Figure 1.Sea Ice Area (September)
 Region: Complete Arctic
 Measure: Sea Ice Area in September of Each Year (from monthly average)
-```{r, }
+
+
+```{r, echo = FALSE }
 
 ### Plot September Total Sea Ice Area###
 icearea_sep <- yearly[ , 9]              #taking september
@@ -112,16 +115,15 @@ plot(1979:2020, icearea_sep, type = 'b',
      cex.axis = 1, 
      font.lab = 1,
      cex = 0.7,
-     pch = 16,
+     pch = 16, 
      )
 
 #abline(linregmod, col = "red", lty = 2) #add linear trendline
 ```
 
 
-### Plot Two
-September Sea Ice Extent
-```{r, }
+### Figure 2. September Sea Ice Extent
+```{r, echo = FALSE }
 
 ### Plot ###
 iceextent_sep <- yearly_sie[ , 9]         #taking september
@@ -143,10 +145,12 @@ plot(1979:2020, iceextent_sep, type = 'b',
 #abline(linregmod, col = "red", lty = 2)  #add linear trendline
 
 ```
-### Plot Three & Four
+
+### Figure 3. Arctic September Sea Ice Extent Anomaly (Area)
 Region: Complete Arctic
 Measure: September Sea Ice Extent Anomaly
-```{r, }
+
+```{r, echo=FALSE, fig.keep='all'}
 
 ### Plot September Total Sea Ice Extent Anomaly###
 
@@ -164,31 +168,23 @@ plot(1979:2020, anomaly_sie, type = 'b',
      cex = 0.7,
      pch = 16,
      )+
-abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]])+
+  
+  abline(sie_trend[["coefficients"]][["(Intercept)"]],sie_trend[["coefficients"]][["t"]], lty=6)+
   #adds 1 sigma lines
-<<<<<<< HEAD
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]])+
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]])+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6, col = 'darkgrey')+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6,col = 'darkgrey')+
 
 #adds 2 sigma lines
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]])+
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]])
-=======
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]+anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6)+
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]-anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=6)+
-
-#adds 2 sigma lines
-abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3)+
-  abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3)
-
-#legend(1, NULL, legend = c('','1 sd','2 ds'))
->>>>>>> 211ae161dce5664a03b35f2e143ba63898adcf77
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]+2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3,col = 'darkgrey')+
+  abline(sie_trend[["coefficients"]][["(Intercept)"]]-2*anomaly_sd,sie_trend[["coefficients"]][["t"]], lty=3,col = 'darkgrey')
+  
+legend('bottomleft', legend=c("trend", "1 stdev", "2 stdev"),col=c("black","darkgrey", "darkgrey"), lty=6:3, cex=0.8)
 
 ```
 
-```{r, include=FALSE}
+### Figure 4. Arctic September Sea Ice Extent Anomaly (%)
 
-
+```{r, echo = FALSE }
 percent_trend <- lm(formula = percent_anomaly ~ t)
 
 plot(1979:2020, percent_anomaly, type = 'b',
@@ -207,10 +203,12 @@ abline(percent_trend[["coefficients"]][["(Intercept)"]],percent_trend[["coeffici
 #abline(linregmod, col = "red", lty = 2) #add linear trendline
 
 ```
-### Plot Five
+
+### Figure 5. Monthly Sea Ice Extent with Moving Mean
 Region: Complete Arctic
 Measure: Monthly Sea Ice Extent with Moving Mean
-```{r, include=FALSE}
+
+```{r, echo = FALSE }
 #Finding the moving mean
 
 mov_sie <- runmean(total_sie,12)
@@ -230,22 +228,4 @@ plot(1:504, total_sie/1e+06, type = 'l',
 
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
